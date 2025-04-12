@@ -83,12 +83,11 @@ echo HotelRoom::asBoolean()
 
 ---
 
-**NOTE**
-
-As mentioned, these aggregate methods returns scalar values.
-
-you can use the `withAggregate` method on a query to return both the collection of bridges and the scalar value of an aggregate.
-You can then access the aggregate value via a method composed of the `field name` and `aggregate type` as a `camel case`
+> [!IMPORTANT] 
+> 
+> As mentioned, these aggregate methods returns scalar values.
+> you can use the `withAggregate` method on a query to return both the collection of bridges and the scalar value of an aggregate.
+> You can then access the aggregate value via a method composed of the `field name` and `aggregate type` as a `camel case`
 
 ---
 

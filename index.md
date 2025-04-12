@@ -11,11 +11,11 @@ hero:
       text: Get Started
       link: /docs/installation
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Seamless Laravel Integration
+    details: Provides an intuitive, Eloquent-like syntax for interacting with Elasticsearch. Allows effortless indexing, searching, and querying without complex configurations.
+  - title: Advanced Query Capabilities
+    details: Supports multi-match queries, aggregations, filtering, and full-text search.
+  - title: Testing
+    details: Easily mock and test your elasticsearch queries.
 ---
 

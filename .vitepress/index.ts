@@ -1,4 +1,4 @@
-import DefaultTheme from "vitepress/theme";
-import "@catppuccin/vitepress/theme/<flavor>/<accent>.css";
+//import DefaultTheme from "vitepress/theme";
+import { VPCarbon } from "vitepress-carbon";
 
-export default DefaultTheme;
+export default VPCarbon;

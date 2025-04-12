@@ -22,7 +22,7 @@ class LogController extends Controller
     /**
      * Index a new log.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $log = new Log();
         
@@ -37,28 +37,31 @@ class LogController extends Controller
     }
 }
 ```
+> [!TIP]
+>   Alternatively you can use the `create` method to "index" a new document. both the `save` and `create` methods return `booleans`. 
 
-!!! tip 
-    Just as like elastic search, whenever you set the `id` on a `new bridge` instance, it will be set as the `_id` of the document
 
-Alternatively you can use the `create` method to "index" a new document. both the `save` and `create` methods returns `booleans`. 
 
 ```php
 <?php
 
 use App\Bridges\Log;
 
-Log::create([
+$log = Log::create([
     'status' => 500,
     'message' => 'this is a log message'
-])
+]);
 
+dump($log);
 ```
+
+> [!IMPORTANT]
+> Just as like elastic search, whenever you set the `id` on a `new bridge` instance, it will be set as the `_id` of the document.
 
 ## Updates
 
-The `save` method may be used to update bridges that already exist in elasticsearch. 
-To Update a bridge, you should first retrieve it and set the attributes you wish to update and then call the `save`
+The `save` method may be used to update documents that already exist in elasticsearch. 
+To Update a document, you should first retrieve it and set the attributes you wish to update and then call the `save`
 method. 
 
 ```php
@@ -72,7 +75,7 @@ $room->save();
 
 ```
 
-In addition, you can use the `increment` or `decrement` method to increase or decrease numeric fields for a bridge. 
+In addition, you can use the `increment` or `decrement` method to increase or decrease numeric fields for a document. 
 Both these methods takes an optional second argument called `counter` with defaults to `1`
 
 ```php
