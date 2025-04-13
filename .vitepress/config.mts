@@ -21,6 +21,8 @@ export default defineConfigWithTheme<ThemeConfig>({
         items: [
           { text: "Generating Bridges", link: "/docs/generating-bridges.md" },
           { text: "Retriving Bridges", link: "/docs/retrieving-bridges" },
+          { text: "Full Text Search", link: "/docs/fulltext-search" },
+          { text: "Highlighting", link: "/docs/highlighting" },
           { text: "Updates and Inserts", link: "/docs/updates-and-inserts" },
           { text: "Pagination", link: "/docs/pagination" },
           { text: "Testing", link: "/docs/testing" },
@@ -38,6 +40,6 @@ export default defineConfigWithTheme<ThemeConfig>({
       light: "vitesse-light",
       dark: "vitesse-dark",
     },
-    lineNumbers: true
+    lineNumbers: true,
   },
 });
