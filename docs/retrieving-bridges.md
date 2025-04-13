@@ -134,10 +134,10 @@ We can access other forms of aggregations such as `stats` and other bucket aggre
 
 <a name="stats"></a>
 
-#### Stats
+## Stats
 
 You can call the `stats` method on the query builder to return the [stats aggregate](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-stats-aggregation.html).
-This method returns and instance of the `Lacasera\ElasticBridge\DTO\Stats` class
+This method returns an instance of the `Lacasera\ElasticBridge\DTO\Stats` class
 
 ```php
 $stats = HotelRoom::asBoolean()
@@ -166,7 +166,7 @@ $stats->toArray();
 $stats->toCollection();
 ```
 
-#### # Histogram and Ranges
+## Histogram and Ranges
 
 <a name="histogram-and-ranges"></a>
 
@@ -203,7 +203,7 @@ dump($rooms->priceHistogram());
 
 <a name="ordering"></a>
 
-####  Ordering
+##  Ordering
 
 The orderBy method allows you to sort the results of the query by a given column. The first argument accepted by the orderBy method should be the column you wish to sort by, while the second argument determines the direction of the sort and may be either `asc` or `desc`:
 
@@ -230,9 +230,9 @@ $rooms = HotelRoom::asBoolean()
 
 <a name="limit-and-offset"></a>
 
-####  Limit and Offset
+##  Limit and Offset
 
-####  The `skip` and `take` Methods
+##  The `skip` and `take` Methods
 
 You may use the `skip` and `take` methods to limit the number of results returned from the query or to `skip` a given number of results in the query:
 
