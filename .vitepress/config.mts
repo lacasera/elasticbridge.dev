@@ -26,7 +26,7 @@ export default defineConfigWithTheme<ThemeConfig>({
           // { text: "Highlighting", link: "/docs/highlighting" },
           { text: "Updates and Inserts", link: "/docs/updates-and-inserts" },
           { text: "Pagination", link: "/docs/pagination" },
-          { text: "Testing", link: "/docs/testing" },
+          // { text: "Testing", link: "/docs/testing" },
         ],
       },
     ],
