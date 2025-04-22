@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Laravel Elastic Bridge"
   text: "An Eloquent way to search"
-  tagline: documentation for the elastic-bridge laravel package
+  tagline: Fluent, Eloquent-like Elasticsearch queries made effortless  
   actions:
     - theme: brand
       text: Get Started
