@@ -4,7 +4,7 @@
 After creating a bridge and its associated elastic search index, you are ready to start retrieving data from your elasticsearch.
 You can think of each bridge as a powerful [query builder](builder.md) allowing you to fluently query the elasticsearch index associated with the bridge.
 
-The `all` method will retrieve all documents from the bridge's associated elasticsearch index:
+The `all` method retrieves all documents from the bridge's index. Internally it does a `match_all` and paginates using the total count.
 
 ```php
 <?php
@@ -35,16 +35,20 @@ use App\Bridges\HotelRoom;
 
 $rooms = HotelRoom::asBoolean()
     ->mustMatch('advertiser', 'booking.com')
-    ->orderBy('price')
+    ->orderBy('price', 'ASC')
     ->take(10)
-    ->get();
+    ->get(['price', 'advertiser']); // select fields
+
+// Inspect the generated body (array or JSON)
+$asArray = HotelRoom::asRaw()->matchAll()->toQuery();
+$asJson = HotelRoom::asRaw()->matchAll()->toQuery(asJson: true);
 ```
 
 <a name="aggregates"></a>
 
 ## Retrieving Single Bridges
 
-In addition to retrieving all documents matching a given query, you may also retrieve single document using the find, first method. Instead of returning a collection of bridges, the find method returns a single bridge instance:
+In addition to retrieving all documents matching a given query, you may also retrieve a single document using `find`. If you pass a single ID, you get one bridge instance; if you pass an array of IDs, you get a collection.
 
 ```php
 use App\Bridges\HotelRoom;
@@ -54,7 +58,7 @@ $room = HotelRoom::find(1);
 
 ## Retrieving Aggregates
 
-When interacting with bridges you may also use the `count`, `sum`, `max`, `min`, `avg` aggregate methods provided by the query builder. As you might expect, these methods return a scalar value instead of a bridge instance.
+When interacting with bridges you may use `count`, `sum`, `max`, `min`, `avg` aggregate methods. These return scalar values. `stats` returns a Stats object and `histogram` returns a collection of Bucket objects.
 
 ```php
 use App\Bridges\HotelRoom;
@@ -85,9 +89,7 @@ echo HotelRoom::asBoolean()
 
 > [!IMPORTANT] 
 > 
-> As mentioned, these aggregate methods returns scalar values.
-> you can use the `withAggregate` method on a query to return both the collection of bridges and the scalar value of an aggregate.
-> You can then access the aggregate value via a method composed of the `field name` and `aggregate type` as a `camel case`
+> Aggregates can also be attached to a query using `withAggregate`, letting you retrieve both documents and aggregate results. Access the aggregate via a camel-cased method on the returned collection: `<field><Aggregate>` e.g. `priceAvg()`.
 
 ---
 
@@ -119,12 +121,12 @@ $rooms = HotelRoom::asBoolean()
     ->withAggregate('range', 'price', [
         'ranges' => [
             'from' => 50,
-            'to' => 500
-        ]
+            'to' => 500,
+        ],
     ])
     ->get();
 
-dump($room->priceRange())
+dump($rooms->priceRange());
 
 ```
 
@@ -177,19 +179,19 @@ $rooms = HotelRoom::asBoolean()
     ->withAggregate('range', 'price', [
         'ranges' => [
             'from' => 50,
-            'to' => 500
-        ]
+            'to' => 500,
+        ],
     ])
     ->get();
 
-dump($room->priceRange())
+dump($rooms->priceRange());
 
 
 // histogram aggregate query
 $rooms = HotelRoom::asBoolean()
     ->shouldMatch('advertiser', 'booking.com')
     ->withAggregate('histogram', 'price', [
-        "interval" => 300
+        'interval' => 300,
     ])
     ->get();
 
@@ -254,6 +256,6 @@ use App\Bridges\HotelRoom;
 $rooms = HotelRoom::asBoolean()
     ->mustMatch('advertiser', 'booking.com')
     ->offset(5)
-    ->limt(10)
+    ->limit(10)
     ->get();
 ```

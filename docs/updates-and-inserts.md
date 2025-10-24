@@ -38,7 +38,7 @@ class LogController extends Controller
 }
 ```
 > [!TIP]
->   Alternatively you can use the `create` method to "index" a new document. both the `save` and `create` methods return `booleans`. 
+> Alternatively you can use the `create` method to index a new document. `save()` returns a boolean, while `create()` returns the created document `_id`.
 
 
 
@@ -47,12 +47,11 @@ class LogController extends Controller
 
 use App\Bridges\Log;
 
-$log = Log::create([
+$id = Log::create([
     'status' => 500,
     'message' => 'this is a log message'
 ]);
-
-dump($log);
+dump($id); // e.g. "9cac02e7-d063-456f-90ad-0b145bb04fde"
 ```
 
 > [!IMPORTANT]
@@ -75,8 +74,7 @@ $room->save();
 
 ```
 
-In addition, you can use the `increment` or `decrement` method to increase or decrease numeric fields for a document. 
-Both these methods takes an optional second argument called `counter` with defaults to `1`
+In addition, you can use the `increment` or `decrement` methods to increase or decrease numeric fields via an update script. Both accept an optional `counter` (default `1`). Note that these methods update Elasticsearch, not the in-memory object; refresh or re-fetch the document to see updated values.
 
 ```php
 
@@ -84,15 +82,10 @@ use App\Bridges\HotelRoom;
 
 $room = HotelRoom::find(1);
 
-echo $room->price; // 50
-
 // increase price by 3
-$room->increment('price', 3)
+$room->increment('price', 3);
 
-echo $room->price; // 53
-
-// decrease price by 1
-$room->decrement('price');
-
-echo $room->price; //52
+// then re-fetch to reflect changes locally
+$room = HotelRoom::find(1);
+echo $room->price;
 ```

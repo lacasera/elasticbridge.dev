@@ -3,7 +3,7 @@ import baseConfig, { ThemeConfig } from "vitepress-carbon/config";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfigWithTheme<ThemeConfig>({
-  lang: "e-US",
+  lang: "en-US",
   ignoreDeadLinks: true,
   title: "Laravel Elastic Bridge",
   description: "An Eloquent Way to Search",
@@ -21,12 +21,13 @@ export default defineConfigWithTheme<ThemeConfig>({
         items: [
           { text: "Installation", link: "/docs/installation" },
           { text: "Generating Bridges", link: "/docs/generating-bridges" },
-          { text: "Retriving Bridges", link: "/docs/retrieving-bridges" },
+          { text: "Retrieving Bridges", link: "/docs/retrieving-bridges" },
           { text: "Full Text Search", link: "/docs/fulltext-search" },
+          { text: "Filters", link: "/docs/filters" },
           // { text: "Highlighting", link: "/docs/highlighting" },
           { text: "Updates and Inserts", link: "/docs/updates-and-inserts" },
           { text: "Pagination", link: "/docs/pagination" },
-          // { text: "Testing", link: "/docs/testing" },
+          { text: "Testing", link: "/docs/testing" },
         ],
       },
     ],
