@@ -4,7 +4,33 @@
 After creating a bridge and its associated elastic search index, you are ready to start retrieving data from your elasticsearch.
 You can think of each bridge as a powerful [query builder](builder.md) allowing you to fluently query the elasticsearch index associated with the bridge.
 
-The `all` method retrieves all documents from the bridge's index. Internally it does a `match_all` and paginates using the total count.
+<a name="all-method"></a>
+
+## The `all` Method
+
+The `all` method retrieves all documents from the bridge's index using cursor pagination. This method is ideal for iterating through large datasets efficiently without loading all records into memory at once.
+
+### How It Works
+
+Internally, the `all` method:
+1. Executes a `match_all` query to retrieve all documents
+2. Uses boolean query mode (`asBoolean()`)
+3. Implements cursor pagination for efficient memory usage
+4. Returns a paginated collection that can be iterated
+
+### Signature
+
+```php
+public static function all(int $perPage = 15)
+```
+
+### Parameters
+
+- **`$perPage`** (int, optional): The number of records to retrieve per page. Default is `15`.
+
+### Usage Examples
+
+**Basic Usage:**
 
 ```php
 <?php
@@ -19,9 +45,61 @@ class HotelRoom extends ElasticBridge
     protected $index = 'hotel-room';
 }
 
+// Retrieve all hotel rooms with default pagination (15 per page)
 foreach (HotelRoom::all() as $hotelRoom) {
     echo $hotelRoom->price;
 }
+```
+
+**Custom Page Size:**
+
+```php
+// Retrieve all hotel rooms with 50 records per page
+foreach (HotelRoom::all(50) as $hotelRoom) {
+    echo $hotelRoom->name . ': $' . $hotelRoom->price;
+}
+```
+
+**Working with the Collection:**
+
+```php
+$rooms = HotelRoom::all(25);
+
+// Access pagination information
+echo 'Total: ' . $rooms->total();
+echo 'Per Page: ' . $rooms->perPage();
+echo 'Current Page: ' . $rooms->currentPage();
+
+// Iterate through the results
+$rooms->each(function ($room) {
+    echo $room->name;
+});
+```
+
+### Performance Considerations
+
+- The `all` method uses cursor pagination, which is memory-efficient for large datasets
+- Adjust the `$perPage` parameter based on your needs:
+  - **Smaller values** (10-25): Better for memory-constrained environments
+  - **Larger values** (50-100): Fewer network requests, but higher memory usage
+- For very large datasets, consider using [pagination](pagination.md) with specific filters
+
+### When to Use
+
+Use the `all` method when you:
+- Need to retrieve all documents from an index
+- Want to iterate through results without complex filtering
+- Require automatic pagination handling
+- Don't need to apply additional query constraints
+
+For filtered queries, use the [query builder](builder.md) instead:
+
+```php
+// For filtered queries, use the query builder
+$filteredRooms = HotelRoom::asBoolean()
+    ->mustMatch('advertiser', 'booking.com')
+    ->where('price', '>', 100)
+    ->get();
 ```
 
 <a name="queries"></a>
@@ -48,12 +126,120 @@ $asJson = HotelRoom::asRaw()->matchAll()->toQuery(asJson: true);
 
 ## Retrieving Single Bridges
 
-In addition to retrieving all documents matching a given query, you may also retrieve a single document using `find`. If you pass a single ID, you get one bridge instance; if you pass an array of IDs, you get a collection.
+<a name="find-method"></a>
+
+### The `find` Method
+
+The `find` method allows you to retrieve one or more documents by their Elasticsearch `_id` values. This is useful when you know the exact document ID(s) you want to retrieve.
+
+### How It Works
+
+Internally, the `find` method:
+1. Uses the `ids` query type in Elasticsearch
+2. Returns a single bridge instance if you pass a single ID
+3. Returns a collection of bridge instances if you pass an array of IDs
+4. Returns `null` (or empty collection) if no matching documents are found
+
+### Signature
+
+```php
+public function find(string|int|array $ids): ElasticBridge|Collection|null
+```
+
+### Parameters
+
+- **`$ids`** (string|int|array): A single document ID or an array of document IDs to retrieve.
+
+### Usage Examples
+
+**Retrieving a Single Document:**
 
 ```php
 use App\Bridges\HotelRoom;
 
+// Find by ID - returns a single HotelRoom instance or null
 $room = HotelRoom::find(1);
+
+if ($room) {
+    echo $room->name;
+    echo $room->price;
+}
+```
+
+**Retrieving Multiple Documents:**
+
+```php
+use App\Bridges\HotelRoom;
+
+// Find multiple rooms by IDs - returns a Collection
+$rooms = HotelRoom::find([1, 2, 3, 42]);
+
+// Iterate through the collection
+foreach ($rooms as $room) {
+    echo $room->name . ': $' . $room->price . PHP_EOL;
+}
+
+// Access collection methods
+echo 'Found ' . $rooms->count() . ' rooms';
+```
+
+**Working with String IDs:**
+
+```php
+use App\Bridges\Log;
+
+// Elasticsearch often uses UUID or hash-based IDs
+$log = Log::find('9cac02e7-d063-456f-90ad-0b145bb04fde');
+
+if ($log) {
+    echo $log->message;
+}
+```
+
+**Chaining with Collection Methods:**
+
+```php
+use App\Bridges\HotelRoom;
+
+// Find multiple rooms and apply collection methods
+$expensiveRooms = HotelRoom::find([1, 2, 3, 4, 5])
+    ->filter(fn($room) => $room->price > 200)
+    ->sortBy('price')
+    ->values();
+
+echo 'Expensive rooms: ' . $expensiveRooms->count();
+```
+
+### When to Use
+
+Use the `find` method when you:
+- Know the exact document ID(s) you need to retrieve
+- Want to fetch specific documents without complex queries
+- Need to retrieve documents by their Elasticsearch `_id` field
+- Want the most efficient way to get documents by ID
+
+For complex queries or filtering, use the [query builder](builder.md):
+
+```php
+// For filtered queries, use the query builder instead
+$rooms = HotelRoom::asBoolean()
+    ->mustMatch('advertiser', 'booking.com')
+    ->where('price', '>', 100)
+    ->get();
+```
+
+### Performance Considerations
+
+- The `find` method uses Elasticsearch's `ids` query, which is very efficient
+- Retrieving documents by ID is one of the fastest operations in Elasticsearch
+- When finding multiple IDs, all documents are retrieved in a single request
+- Consider using `find` with specific fields if you don't need all document data:
+
+```php
+// Retrieve only specific fields (more efficient)
+$rooms = HotelRoom::asIds()
+    ->withValues([1, 2, 3])
+    ->get(['name', 'price']);
 ```
 
 ## Retrieving Aggregates
